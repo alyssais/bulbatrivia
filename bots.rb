@@ -12,22 +12,30 @@ def already_used?(trivia)
   false
 end
 
-def random_trivia_from_page(page)
+def tweet_content(title, url, content)
+  "#{title} #{url}\n#{content}"
+end
+
+def tweet_length(title, content)
+  tweet_content(title, "", content).length + 22 # length of url
+end
+
+def random_trivia_from_page(page, url)
   title = page.css("#firstHeading").text
   options = trivia(page) || []
-  options.map! { |option| "#{title}: #{option}" }
-  options.reject { |option| option.length > 140 || already_used?(option) }
+  options.reject! do |option|
+    tweet_length(title, option) > 140 || already_used?(option)
+  end
+  options.map { |content| tweet_content(title, url, content) }
 end
 
 def random_trivia
-  response = nil
   until option ||= nil
     response = open("http://bulbapedia.bulbagarden.net/wiki/Special:Random")
     page = Nokogiri::HTML response.read
-    options = random_trivia_from_page(page)
+    options = random_trivia_from_page(page, response.base_uri)
     option = options.sample
   end
-  option += " #{response.base_uri}" if option.length <= 117
   option
 end
 
