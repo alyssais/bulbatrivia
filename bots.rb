@@ -43,6 +43,7 @@ class Bulbatrivia < Ebooks::Bot
     scheduler.every '2h' do
       tweet random_trivia
     end
+    tweet random_trivia
   end
 end
 
