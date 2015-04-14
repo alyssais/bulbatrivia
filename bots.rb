@@ -27,7 +27,7 @@ def random_trivia
     options = random_trivia_from_page(page)
     option = options.sample
   end
-  option += " #{response.base_uri}" if option.length > 117
+  option += " #{response.base_uri}" if option.length <= 117
   option
 end
 
