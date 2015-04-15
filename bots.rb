@@ -26,7 +26,7 @@ def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   options = trivia(page) || []
   options.map! { |option| option.split("\n").first }
   options.reject! do |option|
-    format.%(title: title, content: option, url: "").length > 140 || already_used?(option)
+    format.%(title: title, content: option, url: "").length > 127 || already_used?(option)
   end
   format_args = { title: title, url: response.request.url }
   options.map { |content| format % format_args.merge(content: content) }
