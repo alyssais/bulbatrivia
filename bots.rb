@@ -60,10 +60,9 @@ class Bulbatrivia < Ebooks::Bot
   end
 
   def on_startup
-    scheduler.every '2h' do
+    scheduler.every '1h' do
       tweet random_trivia
     end
-    tweet random_trivia
   end
 
   def on_mention(mention)
