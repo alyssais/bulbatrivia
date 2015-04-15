@@ -68,8 +68,8 @@ class Bulbatrivia < Ebooks::Bot
 
   def on_mention(mention)
     text = meta(mention).mentionless
+    text.gsub! /\A\./, ""
     response = Bulbapedia.go(text)
-
     if response.request.url.start_with? "http://bulbapedia.bulbagarden.net/w/index.php"
       answer = meta(mention).reply_prefix + "Bulbapedia doesn't have an article about "
       answer += answer.length + text.length > 140 ? "that" : text
