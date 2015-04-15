@@ -19,18 +19,6 @@ def already_used?(trivia)
   false
 end
 
-def search_results?(url)
-
-end
-
-def tweet_content(title, url, content)
-  "#{title} #{url}\n#{content}"
-end
-
-def tweet_length(title, content)
-  tweet_content(title, "", content).length + 22 # length of url
-end
-
 def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   page = Nokogiri::HTML(response.to_str)
   page.css("sup").remove
@@ -38,7 +26,7 @@ def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   options = trivia(page) || []
   options.map! { |option| option.split("\n").first }
   options.reject! do |option|
-    tweet_length(title, option) > 140 || already_used?(option)
+    format.%(title: title, content: option, url: "").length > 140 || already_used?(option)
   end
   format_args = { title: title, url: response.request.url }
   options.map { |content| format % format_args.merge(content: content) }
