@@ -36,7 +36,7 @@ def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   page.css("sup").remove
   title = page.css("#firstHeading").text
   options = trivia(page) || []
-  options.map! { option.split("\n").first }
+  options.map! { |option| option.split("\n").first }
   options.reject! do |option|
     tweet_length(title, option) > 140 || already_used?(option)
   end
