@@ -65,6 +65,10 @@ class Bulbatrivia < Ebooks::Bot
     end
   end
 
+  def on_follow(user)
+    follow(user.screen_name)
+  end
+
   def on_mention(mention)
     text = meta(mention).mentionless
     text.gsub! /\A\./, ""
