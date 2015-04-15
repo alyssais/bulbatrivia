@@ -26,7 +26,7 @@ def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   options = trivia(page) || []
   options.map! { |option| option.split("\n").first }
   options.reject! do |option|
-    format.%(title: title, content: option, url: "").length > 127 || already_used?(option)
+    format.%(title: title, content: option, url: "").length > 117 || already_used?(option)
   end
   format_args = { title: title, url: response.request.url }
   options.map { |content| format % format_args.merge(content: content) }
@@ -72,7 +72,7 @@ class Bulbatrivia < Ebooks::Bot
     options = random_trivia_from_response(response, format: "%{content}")
     answer = meta(mention).reply_prefix
     answer += options.sample || ""
-    answer += " #{response.request.url}" if answer.length <= 127
+    answer += " #{response.request.url}" if answer.length <= 117
     answer.gsub! "  ", " "
     reply mention, answer
   end
