@@ -12,7 +12,7 @@ end
 def trivia(page)
   trivia_header = page.css("#Trivia").first
   return unless trivia_header
-  trivia_header.parent.css("+ ul > li").map(&:text).map(&:strip).reject(&:empty?)
+  trivia_header.parent.css("~ ul").first.css("> li").map(&:text).map(&:strip).reject(&:empty?)
 end
 
 def already_used?(trivia)
