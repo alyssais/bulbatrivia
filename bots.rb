@@ -72,7 +72,7 @@ class Bulbatrivia < Ebooks::Bot
     options = random_trivia_from_response(response, format: "%{content}")
     answer = meta(mention).reply_prefix
     answer += options.sample || ""
-    answer += " #{response.request.url}" if answer.length <= 117
+    answer += " #{response.request.url}#Trivia" if answer.length <= 117
     answer.gsub! "  ", " "
     reply mention, answer
   end
