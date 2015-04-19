@@ -2,6 +2,7 @@ require "open-uri"
 require "nokogiri"
 require "twitter_ebooks"
 require "rest-client"
+require "redis"
 
 Bulbapedia = RestClient::Resource.new("http://bulbapedia.bulbagarden.net")
 
@@ -19,8 +20,16 @@ def trivia(page)
   items.map { |li| li.text.strip }.reject(&:empty?)
 end
 
-def already_used?(trivia)
-  false
+def redis
+  $redis ||= Redis.new(url: ENV["REDISTOGO_URL"])
+end
+
+def already_used?(trivium)
+  redis.sismember(:tweets, trivium)
+end
+
+def use!(trivium)
+  redis.sadd(:tweets, trivium)
 end
 
 def trivia_from_response(response, format: "%{title} %{url}\n%{content}")
@@ -30,7 +39,7 @@ def trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   options = trivia(page) || []
   options.map! { |option| option.split("\n").first }
   options.reject! do |option|
-    format.%(title: title, content: option, url: "").length > 117 || already_used?(option)
+    format.%(title: title, content: option, url: "").length > 117
   end
   format_args = { title: title, url: response.request.url }
   options.map { |content| format % format_args.merge(content: content) }
@@ -39,7 +48,9 @@ end
 def random_trivium
   until option ||= nil
     response = Bulbapedia["wiki/Special:Random"].get
-    option = trivia_from_response(response).sample
+    options = trivia_from_response(response)
+    options.reject! { |trivium| already_used? trivium }
+    option = options.sample
   end
   option
 end
@@ -54,7 +65,9 @@ class Bulbatrivia < Ebooks::Bot
 
   def on_startup
     scheduler.every '1h' do
-      tweet random_trivium
+      trivium = random_trivium
+      tweet trivium
+      use! trivium
     end
   end
 

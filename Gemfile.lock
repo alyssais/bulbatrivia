@@ -85,5 +85,6 @@ PLATFORMS
 
 DEPENDENCIES
   nokogiri
+  redis
   rest-client
   twitter_ebooks
