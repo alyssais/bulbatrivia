@@ -15,9 +15,11 @@ def trivia(page)
   return unless trivia_header_span
   siblings = trivia_header_span.parent.css("~ *")
   section_content = siblings.slice_before { |e| e.name == "h2" }.first
-  lists = section_content.select { |e| %w(ol ul).include? e.name }
-  items = lists.map { |e| e.css("> li") }.flatten
-  items.map { |li| li.text.strip }.reject(&:empty?)
+  lists = section_content.select do |e|
+    %w(ol ul).include?(e.name) && e.matches?(":not([class])")
+  end
+  items = lists.map { |e| e.css("> li").text.split("\n").first.strip }.flatten
+  items.reject { |item| item.empty? || item.end_with?(?:) }
 end
 
 def redis
@@ -37,10 +39,6 @@ def trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   page.css("sup").remove
   title = page.css("#firstHeading").text
   options = trivia(page) || []
-  options.map! { |option| option.split("\n").first }
-  options.reject! do |option|
-    format.%(title: title, content: option, url: "").length > 117
-  end
   format_args = { title: title, url: response.request.url }
   options.map { |content| format % format_args.merge(content: content) }
 end
@@ -49,7 +47,10 @@ def random_trivium
   until option ||= nil
     response = Bulbapedia["wiki/Special:Random"].get
     options = trivia_from_response(response)
-    options.reject! { |trivium| already_used? trivium }
+    options.reject! do |trivium|
+      already_used?(trivium) ||
+        format.%(title: title, content: option, url: "").length > 117
+    end
     option = options.sample
   end
   option
@@ -78,6 +79,7 @@ class Bulbatrivia < Ebooks::Bot
   def on_mention(mention)
     text = meta(mention).mentionless
     text.gsub! /\A\./, ""
+    return if text.start_with? "—" # like a comment!
     response = Bulbapedia.go(text)
     if response.request.url.start_with? "http://bulbapedia.bulbagarden.net/w/index.php"
       answer = meta(mention).reply_prefix + "Bulbapedia doesn't have an article about "
