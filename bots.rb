@@ -10,9 +10,13 @@ def Bulbapedia.go(term)
 end
 
 def trivia(page)
-  trivia_header = page.css("#Trivia").first
-  return unless trivia_header
-  trivia_header.parent.css("~ ul").first.css("> li").map(&:text).map(&:strip).reject(&:empty?)
+  trivia_header_span = page.css("#Trivia").first
+  return unless trivia_header_span
+  siblings = trivia_header_span.parent.css("~ *")
+  section_content = siblings.slice_before { |e| e.name == "h2" }.first
+  lists = section_content.select { |e| %w(ol ul).include? e.name }
+  items = lists.map { |e| e.css("> li") }.flatten
+  items.map { |li| li.text.strip }.reject(&:empty?)
 end
 
 def already_used?(trivia)
