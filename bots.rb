@@ -6,6 +6,12 @@ require "redis"
 
 Bulbapedia = RestClient::Resource.new("http://bulbapedia.bulbagarden.net")
 
+class SearchResult < Struct.new(:title, :href)
+  def get
+    Bulbapedia[href].get
+  end
+end
+
 class << Bulbapedia
   def go(term)
     self["w/index.php"].get params: { search: term }
@@ -15,9 +21,10 @@ class << Bulbapedia
     self["w/index.php"].get params: { search: term, fulltext: "Search" }
   end
 
-  def first_search_result(term)
-    index = Nokogiri::HTML search(term).to_str
-    self[index.css(".mw-search-result-heading a").first.attr("href")].get
+  def search_results(term)
+    Nokogiri::HTML(search(term)).css(".mw-search-result-heading a").map do |a|
+      SearchResult.new(a.text, a.attr(:href))
+    end
   end
 end
 
@@ -29,7 +36,7 @@ def trivia(page)
   lists = section_content.select do |e|
     %w(ol ul).include?(e.name) && e.matches?(":not([class])")
   end
-  items = lists.map { |e| e.css("> li").text.split("\n").first.strip }.flatten
+  items = lists.map { |e| e.css("> li").map { |li| li.text.split("\n").first.strip } }.flatten
   items.reject { |item| item.empty? || item.end_with?(?:) }
 end
 
@@ -50,6 +57,9 @@ def trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   page.css("sup").remove
   title = page.css("#firstHeading").text
   options = trivia(page) || []
+  options.reject! do |option|
+    format.%(title: title, content: option, url: ?a * 22).length > 140
+  end
   format_args = { title: title, url: response.request.url }
   options.map { |content| format % format_args.merge(content: content) }
 end
@@ -58,10 +68,7 @@ def random_trivium
   until option ||= nil
     response = Bulbapedia["wiki/Special:Random"].get
     options = trivia_from_response(response)
-    options.reject! do |trivium|
-      already_used?(trivium) ||
-        format.%(title: title, content: option, url: "").length > 117
-    end
+    options.reject! { |trivium| already_used?(trivium) }
     option = options.sample
   end
   option
@@ -87,11 +94,22 @@ class Bulbatrivia < Ebooks::Bot
     follow(user.screen_name)
   end
 
+  def on_timeline(tweet)
+    Bulbapedia.search_results(meta(tweet).mentionless).each do |result|
+      title = result.title.gsub(/\([^\)]*\)/, "").strip
+      if meta(tweet).mentionless.downcase[title.downcase]
+        reply_to(tweet: tweet, response: result.get)
+        break
+      end
+    end
+  end
+
   def on_mention(mention)
     text = meta(mention).mentionless
     text.gsub! /\A\./, ""
     return if text.start_with? "—" # like a comment!
-    response = Bulbapedia.first_search_result(text)
+    response = Bulbapedia.search_results(text).first.get
+
     if response.request.url.start_with? "http://bulbapedia.bulbagarden.net/w/index.php"
       answer = meta(mention).reply_prefix + "Bulbapedia doesn't have an article about "
       answer += answer.length + text.length > 140 ? "that" : text
@@ -99,12 +117,17 @@ class Bulbatrivia < Ebooks::Bot
       return
     end
 
-    options = trivia_from_response(response, format: "%{content}")
-    answer = meta(mention).reply_prefix
-    answer += options.sample || ""
-    answer += " #{response.request.url}#Trivia" if answer.length <= 117
-    answer.gsub! "  ", " "
-    reply mention, answer
+    reply_to(tweet: mention, response: response, allow_url_only: true)
+  end
+
+  protected
+
+  def reply_to(tweet:, response:, allow_url_only: false)
+    prefix = meta(tweet).reply_prefix
+    options = trivia_from_response(response, format: "#{prefix}%{content}")
+    answer = options.sample || ""
+    answer += " #{response.request.url}#Trivia" if answer.length <= 117 && (answer != "" || allow_url_only)
+    reply tweet, answer
   end
 end
 
