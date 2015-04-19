@@ -23,7 +23,7 @@ def already_used?(trivia)
   false
 end
 
-def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
+def trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   page = Nokogiri::HTML(response.to_str)
   page.css("sup").remove
   title = page.css("#firstHeading").text
@@ -36,10 +36,10 @@ def random_trivia_from_response(response, format: "%{title} %{url}\n%{content}")
   options.map { |content| format % format_args.merge(content: content) }
 end
 
-def random_trivia
+def random_trivium
   until option ||= nil
     response = Bulbapedia["wiki/Special:Random"].get
-    option = random_trivia_from_response(response).sample
+    option = trivia_from_response(response).sample
   end
   option
 end
@@ -54,7 +54,7 @@ class Bulbatrivia < Ebooks::Bot
 
   def on_startup
     scheduler.every '1h' do
-      tweet random_trivia
+      tweet random_trivium
     end
   end
 
@@ -73,7 +73,7 @@ class Bulbatrivia < Ebooks::Bot
       return
     end
 
-    options = random_trivia_from_response(response, format: "%{content}")
+    options = trivia_from_response(response, format: "%{content}")
     answer = meta(mention).reply_prefix
     answer += options.sample || ""
     answer += " #{response.request.url}#Trivia" if answer.length <= 117
