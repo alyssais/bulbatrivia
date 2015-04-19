@@ -6,8 +6,19 @@ require "redis"
 
 Bulbapedia = RestClient::Resource.new("http://bulbapedia.bulbagarden.net")
 
-def Bulbapedia.go(term)
-  self["w/index.php"].get params: { search: term }
+class << Bulbapedia
+  def go(term)
+    self["w/index.php"].get params: { search: term }
+  end
+
+  def search(term)
+    self["w/index.php"].get params: { search: term, fulltext: "Search" }
+  end
+
+  def first_search_result(term)
+    index = Nokogiri::HTML search(term).to_str
+    self[index.css(".mw-search-result-heading a").first.attr("href")].get
+  end
 end
 
 def trivia(page)
@@ -80,7 +91,7 @@ class Bulbatrivia < Ebooks::Bot
     text = meta(mention).mentionless
     text.gsub! /\A\./, ""
     return if text.start_with? "—" # like a comment!
-    response = Bulbapedia.go(text)
+    response = Bulbapedia.first_search_result(text)
     if response.request.url.start_with? "http://bulbapedia.bulbagarden.net/w/index.php"
       answer = meta(mention).reply_prefix + "Bulbapedia doesn't have an article about "
       answer += answer.length + text.length > 140 ? "that" : text
