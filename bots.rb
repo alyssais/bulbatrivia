@@ -59,8 +59,7 @@ def random_trivium
     response = Bulbapedia["wiki/Special:Random"].get
     options = trivia_from_response(response)
     options.reject! do |trivium|
-      already_used?(trivium) ||
-        format.%(title: title, content: option, url: "").length > 117
+      already_used?(trivium)
     end
     option = options.sample
   end
