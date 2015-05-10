@@ -1,1 +1,1 @@
-bots: ebooks start
+bots: bin/run
