@@ -2,8 +2,6 @@ require_relative "../bulbapedia"
 
 module Bulbatrivia
   class TriviaManager
-    attr_accessor :trivia_constraints
-
     def initialize(&predicate)
       @client = Bulbapedia::Client.new
       @predicate = predicate
