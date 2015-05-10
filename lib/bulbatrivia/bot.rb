@@ -65,6 +65,7 @@ module Bulbatrivia
         trivium = @mention_trivia_manager.trivia(page: page).sample
         no_trivia = trivium.nil?
         trivium ||= { url: page.url, title: page.title, content: "" }
+        trivium[:url] << "#Trivia"
         format_tweet(trivium, length: length).tap { |t| t.strip! if no_trivia }
       else
         format_tweet({term: text}, length: length, formats: ERROR_FORMATS)
