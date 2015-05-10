@@ -54,7 +54,7 @@ module Bulbatrivia
       page = @mention_client.search(text)[0]
       trivium = @mention_trivia_manager.trivia(page: page).sample
       length = MAX_TWEET_LENGTH - @reply_prefix.length
-      reply mention, reply_prefix + format_tweet(trivium, length: length)
+      reply mention, @reply_prefix + format_tweet(trivium, length: length)
     end
 
     protected
