@@ -6,6 +6,8 @@ module Bulbatrivia
   class Bot < Ebooks::Bot
     MAX_TWEET_LENGTH = 140
 
+    # various formats a tweet can be in,
+    # in order of preference.
     FORMATS = [
       "%{title} %{url}\n%{content}",
       "%{title}\n%{content}",
