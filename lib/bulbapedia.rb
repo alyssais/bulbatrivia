@@ -1,5 +1,6 @@
-$:.unshift File.expand_path(__dir__)
+require "bundler"
+Bundler.require
 
-require "bulbapedia/page"
-require "bulbapedia/client"
-require "bulbapedia/search"
+require_relative "bulbapedia/page"
+require_relative "bulbapedia/client"
+require_relative "bulbapedia/search"

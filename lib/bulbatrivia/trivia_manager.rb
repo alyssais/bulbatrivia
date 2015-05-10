@@ -1,5 +1,4 @@
-$:.unshift File.expand_path("#{__dir__}/..")
-require "bulbapedia"
+require_relative "../bulbapedia"
 
 module Bulbatrivia
   class TriviaManager
