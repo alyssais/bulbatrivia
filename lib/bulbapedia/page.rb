@@ -10,7 +10,7 @@ module Bulbapedia
     def initialize(mechanize_page)
       @mechanize_page = mechanize_page
       @url = mechanize_page.uri.to_s
-      @title = mechanize_page.title
+      @title = mechanize_page.search("#firstHeading").text
     end
 
     def trivia
