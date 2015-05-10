@@ -17,19 +17,17 @@ module Bulbatrivia
 
       while @cached_trivia.empty?
         page = @client.random_page
-        url = page.url
-        title = page.title
-        @cached_trivia = (page.trivia || []).shuffle
-        apply_constraints!(@cached_trivia)
+        @cached_trivia = trivia(page: page).shuffle
       end
 
       { url: url, title: title, content: @cached_trivia.pop }
     end
 
-    private
-
-    def apply_constraints!(trivia)
-      trivia.select!(&@predicate)
+    def trivia(page:)
+      trivia = (page.trivia || []).map do |content|
+        # create trivia objects
+        { url: page.url, title: page.title, content: content }
+      end.select(&@predicate) # apply constraints
     end
   end
 end
