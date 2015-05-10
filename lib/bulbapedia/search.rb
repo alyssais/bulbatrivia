@@ -1,5 +1,7 @@
 module Bulbapedia
   class Search
+    include Enumerable
+
     RESULT_LINK_SELECTOR = ".mw-search-result-heading a"
 
     def initialize(term, client, limit: 20)
@@ -14,7 +16,14 @@ module Bulbapedia
         page_index = index / @limit
         index_on_page = index % @limit
         link = results_for(page: page(page_index))[index_on_page]
-        Page.new(@client.agent.click(link))
+        Page.new(@client.agent.click(link)) unless link.nil?
+      end
+    end
+
+    def each
+      i = -1
+      while page = self[i += 1]
+        yield page
       end
     end
 

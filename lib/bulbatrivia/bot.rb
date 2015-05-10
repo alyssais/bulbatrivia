@@ -15,6 +15,11 @@ module Bulbatrivia
       "%{content}",
     ]
 
+    ERROR_FORMATS = [
+      "Bulbapedia doesn't have an article about %{term}.",
+      "Bulbapedia doesn't have an article about that."
+    ]
+
     def configure
       # no-op
       # configuration will be handled by bot owner
@@ -51,18 +56,25 @@ module Bulbatrivia
     def on_mention(mention)
       text = meta(mention).mentionless
       @reply_prefix = meta(mention).reply_prefix
-      page = @mention_client.search(text)[0]
-      trivium = @mention_trivia_manager.trivia(page: page).sample
       length = MAX_TWEET_LENGTH - @reply_prefix.length
-      reply mention, @reply_prefix + format_tweet(trivium, length: length)
+      page = @mention_client.search(text)[0]
+
+      response = if page
+        trivium = @mention_trivia_manager.trivia(page: page).sample
+        format_tweet(trivium, length: length)
+      else
+        format_tweet({term: text}, length: length, formats: ERROR_FORMATS)
+      end
+
+      reply mention, @reply_prefix + response
     end
 
     protected
 
-    def format_tweet(args, length: MAX_TWEET_LENGTH)
+    def format_tweet(args, length: MAX_TWEET_LENGTH, formats: FORMATS)
       sub_url = ?a * 22 # on Twitter, all URLs are 22 characters
       length_args = args.merge(url: sub_url)
-      format = FORMATS.select do |format|
+      format = formats.select do |format|
         (format % length_args).length <= length
       end.first
       format % args
