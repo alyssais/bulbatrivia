@@ -60,8 +60,12 @@ module Bulbatrivia
       page = @mention_client.search(text)[0]
 
       response = if page
+        # if page has no trivia, format with a dummy trivium, then remove the
+        # last line, so the tweet is the title of the article and a link.
         trivium = @mention_trivia_manager.trivia(page: page).sample
-        format_tweet(trivium, length: length)
+        no_trivia = trivium.nil?
+        trivium ||= { url: page.url, title: page.title, content: "" }
+        format_tweet(trivium, length: length).tap { |t| t.strip! if no_trivia }
       else
         format_tweet({term: text}, length: length, formats: ERROR_FORMATS)
       end
