@@ -17,7 +17,7 @@ module Bulbatrivia
 
     ERROR_FORMATS = [
       "Bulbapedia doesn't have an article about %{term}.",
-      "Bulbapedia doesn't have an article about that."
+      "Bulbapedia doesn't have an article about that.",
     ]
 
     def configure
