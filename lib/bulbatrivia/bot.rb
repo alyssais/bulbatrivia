@@ -1,5 +1,5 @@
 require "twitter_ebooks"
-
+require_relative "../bulbapedia"
 require_relative "trivia_manager"
 
 module Bulbatrivia

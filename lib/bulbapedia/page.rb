@@ -1,6 +1,3 @@
-require "open-uri"
-require "nokogiri"
-
 module Bulbapedia
   class Page
     attr :mechanize_page

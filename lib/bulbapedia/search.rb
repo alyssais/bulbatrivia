@@ -1,3 +1,5 @@
+require_relative "page"
+
 module Bulbapedia
   class Search
     include Enumerable

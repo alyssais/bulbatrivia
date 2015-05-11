@@ -1,4 +1,6 @@
 require "mechanize"
+require_relative "page"
+require_relative "search"
 
 module Bulbapedia
   class Client
