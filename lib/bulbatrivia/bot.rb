@@ -82,6 +82,7 @@ module Bulbatrivia
       format = formats.select do |format|
         (format % length_args).length <= length
       end.first
+      puts "Chose format #{format.inspect} for arguments: #{args.inspect}"
       format % args
     end
   end
