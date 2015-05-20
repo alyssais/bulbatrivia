@@ -24,7 +24,10 @@ module Bulbatrivia
       trivia = (page.trivia || []).map do |content|
         # create trivia objects
         { url: page.url, title: page.title, content: content }
-      end.select(&@predicate) # apply constraints
+      end
+
+      trivia.select!(&@predicate) if @predicate # apply constraints
+      trivia
     end
   end
 end
