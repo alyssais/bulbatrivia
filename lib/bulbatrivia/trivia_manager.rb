@@ -17,7 +17,7 @@ module Bulbatrivia
         @cached_trivia = trivia(page: page).shuffle
       end
 
-      { url: url, title: title, content: @cached_trivia.pop }
+      @cached_trivia.pop
     end
 
     def trivia(page:)
