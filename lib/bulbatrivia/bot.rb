@@ -46,6 +46,7 @@ module Bulbatrivia
       scheduler.every '1h' do
         trivium = @scheduled_trivia_manager.random_trivium
         tweet format_tweet(trivium)
+        unfollow_unfollers
       end
     end
 
@@ -72,6 +73,11 @@ module Bulbatrivia
       end
 
       reply mention, @reply_prefix + response
+    end
+
+    def unfollow_unfollers
+      unfollowers = twitter.following.map(&:id) - twitter.followers.map(&:id)
+      twitter.unfollow(*unfollowers)
     end
 
     protected
