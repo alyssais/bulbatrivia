@@ -76,6 +76,10 @@ module Bulbatrivia
     end
 
     def unfollow_unfollers
+      # FIXME: this might cause problems if bulbatrivia ever gets more than
+      # 5000 followers, because that's the limit of followers/ids. The Twitter
+      # gem might handle this itself, though…
+      # ref: https://dev.twitter.com/rest/reference/get/followers/ids
       unfollowers = twitter.following.map(&:id) - twitter.followers.map(&:id)
       twitter.unfollow(*unfollowers)
     end
