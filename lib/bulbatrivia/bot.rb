@@ -5,6 +5,7 @@ require_relative "trivia_manager"
 module Bulbatrivia
   class Bot < Ebooks::Bot
     MAX_TWEET_LENGTH = 140
+    MAINTAINER_SCREEN_NAME = ENV["MAINTAINER_SCREEN_NAME"]
 
     # various formats a tweet can be in,
     # in order of preference.
@@ -56,6 +57,8 @@ module Bulbatrivia
 
     def on_mention(mention)
       text = meta(mention).mentionless
+      sender_name = mention.user.screen_name
+      return if text[/\Aupdate/i] && sender_name == MAINTAINER_SCREEN_NAME
       @reply_prefix = meta(mention).reply_prefix
       length = MAX_TWEET_LENGTH - @reply_prefix.length
       page = @mention_client.search(text)[0]
