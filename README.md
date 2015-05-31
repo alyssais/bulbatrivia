@@ -20,12 +20,20 @@ TWITTER_CONSUMER_KEY
 TWITTER_CONSUMER_SECRET
 TWITTER_ACCESS_TOKEN
 TWITTER_ACCESS_TOKEN_SECRET
+MAINTAINER_SCREEN_NAME
 ```
 
 Run the bot:
 
 ```bash
 ebooks start
+```
+
+For debugging, you can also get a console.
+An instance of the bot will be assigned to the `Bot` variable.
+
+```bash
+bin/console
 ```
 
 ## Contributing
