@@ -31,7 +31,7 @@ module Bulbatrivia
 
       @scheduled_trivia_manager = TriviaManager.new do |trivium|
         content = trivium[:content]
-        next false if content.include(?:)
+        next false if content.include?(?:)
         next false if content.length > MAX_TWEET_LENGTH
         next false if content[/is a move .*that .* can learn/]
         true
