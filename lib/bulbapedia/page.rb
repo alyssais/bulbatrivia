@@ -31,6 +31,12 @@ module Bulbapedia
       items = wrappers.map do |wrapper|
         # remove sub-trivia
         (wrapper.name == ?p ? [wrapper] : wrapper.css("> li")).map do |node|
+          node = node.dup # don't modify the original node
+
+          # replace images with alt text
+          node.css("img").each { |img| img.swap(img[:alt]) }
+
+          # remove sub-trivia
           node.dup.tap { |n| n.css("li").remove }.text.strip
         end.reject(&:empty?)
       end.flatten
