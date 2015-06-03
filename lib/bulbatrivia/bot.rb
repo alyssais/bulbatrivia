@@ -34,7 +34,7 @@ module Bulbatrivia
         next false if content.length > MAX_TWEET_LENGTH
         next false if content[/:/]
         next false if content[/Pokédex entry comes from/]
-        next false if content[/is a move .*that .* can learn/]
+        next false if content[/moves? .*that .* can learn/]
         true
       end
 
