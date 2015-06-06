@@ -35,6 +35,17 @@ module Bulbatrivia
         next false if content[/:/]
         next false if content[/Pokédex entry comes from/]
         next false if content[/is a move .*that .* can learn/]
+
+        # reject tweets if the formatted version of the tweet does not contain
+        # the article title (without a bracketed category).
+        #
+        # otherwise, the subject of the tweet might be unclear.
+        # e.g. https://github.com/alyssais/bulbatrivia/issues/2
+        next false if begin
+          base_title = trivium[:title][0...trivium[:title].index(?()].strip
+          !format_tweet(trivium, log: false)[base_title]
+        end
+
         true
       end
 
@@ -93,13 +104,13 @@ module Bulbatrivia
 
     protected
 
-    def format_tweet(args, length: MAX_TWEET_LENGTH, formats: FORMATS)
+    def format_tweet(args, length: MAX_TWEET_LENGTH, formats: FORMATS, log: true)
       sub_url = ?a * 22 # on Twitter, all URLs are 22 characters
       length_args = args.merge(url: sub_url)
       format = formats.select do |format|
         (format % length_args).length <= length
       end.first
-      puts "Chose format #{format.inspect} for arguments: #{args.inspect}"
+      puts "Chose format #{format.inspect} for arguments: #{args}" if log
       format % args
     end
   end
