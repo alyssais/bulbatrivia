@@ -37,7 +37,7 @@ module Bulbapedia
           node.css("img").each { |img| img.swap(img[:alt]) }
 
           # remove sub-trivia
-          node.dup.tap { |n| n.css("li").remove }.text.strip
+          node.tap { |n| n.css("li").remove }.text.strip
         end.reject(&:empty?)
       end.flatten
 
