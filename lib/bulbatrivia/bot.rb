@@ -42,10 +42,8 @@ module Bulbatrivia
         # otherwise, the subject of the tweet might be unclear.
         # e.g. https://github.com/alyssais/bulbatrivia/issues/2
         next if begin
-          if bracket_index = trivium[:title].index(?()
-            base_title = trivium[:title][0...bracket_index].strip
-            !format_tweet(trivium, log: false)[base_title]
-          end
+          base = base_title(title: trivium[:title])
+          !format_tweet(trivium, log: false)[base]
         end
 
         true
@@ -114,6 +112,16 @@ module Bulbatrivia
       end.first
       puts "Chose format #{format.inspect} for arguments: #{args}" if log
       format % args
+    end
+
+    private
+
+    def base_title(title:)
+      if bracket_index = title.index(?()
+        title[0...bracket_index].strip
+      else
+        title
+      end
     end
   end
 end
