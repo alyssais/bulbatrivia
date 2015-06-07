@@ -31,17 +31,17 @@ module Bulbatrivia
 
       @scheduled_trivia_manager = TriviaManager.new do |trivium|
         content = trivium[:content]
-        next false if content.length > MAX_TWEET_LENGTH
-        next false if content[/:/]
-        next false if content[/Pokédex entry comes from/]
-        next false if content[/moves? .*(?:that|which) .* can learn/]
+        next if content.length > MAX_TWEET_LENGTH
+        next if content[/:/]
+        next if content[/Pokédex entry comes from/]
+        next if content[/moves? .*(?:that|which) .* can learn/]
 
         # reject tweets if the formatted version of the tweet does not contain
         # the article title (without a bracketed category).
         #
         # otherwise, the subject of the tweet might be unclear.
         # e.g. https://github.com/alyssais/bulbatrivia/issues/2
-        next false if begin
+        next if begin
           if bracket_index = trivium[:title].index(?()
             base_title = trivium[:title][0...bracket_index].strip
             !format_tweet(trivium, log: false)[base_title]
@@ -54,8 +54,8 @@ module Bulbatrivia
       @mention_client = Bulbapedia::Client.new
       @mention_trivia_manager = TriviaManager.new do |trivium|
         content = trivium[:content]
-        next false if content.include? ?:
-        next false if (@reply_prefix + content).length > MAX_TWEET_LENGTH
+        next if content.include? ?:
+        next if (@reply_prefix + content).length > MAX_TWEET_LENGTH
         true
       end
     end
