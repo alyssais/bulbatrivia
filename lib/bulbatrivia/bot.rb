@@ -42,8 +42,10 @@ module Bulbatrivia
         # otherwise, the subject of the tweet might be unclear.
         # e.g. https://github.com/alyssais/bulbatrivia/issues/2
         next false if begin
-          base_title = trivium[:title][0...trivium[:title].index(?()].strip
-          !format_tweet(trivium, log: false)[base_title]
+          if bracket_index = trivium[:title].index(?()
+            base_title = trivium[:title][0...bracket_index].strip
+            !format_tweet(trivium, log: false)[base_title]
+          end
         end
 
         true
