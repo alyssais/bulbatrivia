@@ -3,3 +3,7 @@ source "https://rubygems.org"
 
 gem "mechanize"
 gem "twitter_ebooks"
+
+group :test do
+  gem 'rspec'
+end
