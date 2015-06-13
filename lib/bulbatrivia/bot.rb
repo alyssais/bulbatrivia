@@ -62,7 +62,7 @@ module Bulbatrivia
       scheduler.every '1h' do
         trivium = @scheduled_trivia_manager.random_trivium
         tweet format_tweet(trivium)
-        unfollow_unfollers
+        unfollow_unfollowers
       end
     end
 
@@ -93,7 +93,7 @@ module Bulbatrivia
       reply mention, @reply_prefix + response
     end
 
-    def unfollow_unfollers
+    def unfollow_unfollowers
       # FIXME: this might cause problems if bulbatrivia ever gets more than
       # 5000 followers, because that's the limit of followers/ids. The Twitter
       # gem might handle this itself, though…
