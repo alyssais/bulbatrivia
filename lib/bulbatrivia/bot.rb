@@ -99,6 +99,7 @@ module Bulbatrivia
       # gem might handle this itself, though…
       # ref: https://dev.twitter.com/rest/reference/get/followers/ids
       unfollowers = twitter.following.map(&:id) - twitter.followers.map(&:id)
+      puts "@#{username}: Unfollowing #{unfollowers.join(", ")}"
       twitter.unfollow(*unfollowers)
     end
 
@@ -110,7 +111,7 @@ module Bulbatrivia
       format = formats.select do |format|
         (format % length_args).length <= length
       end.first
-      puts "Chose format #{format.inspect} for arguments: #{args}" if log
+      puts "@#{username}: Chose format #{format.inspect} for arguments: #{args}" if log
       format % args
     end
 
