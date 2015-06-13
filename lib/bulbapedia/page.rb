@@ -36,8 +36,8 @@ module Bulbapedia
           # replace images with alt text
           node.css("img").each { |img| img.swap(img[:alt]) }
 
-          # remove sub-trivia
-          node.tap { |n| n.css("li").remove }.text.strip
+          # remove sub-trivia and citations
+          node.tap { |n| n.css("li, .reference").remove }.text.strip
         end.reject(&:empty?)
       end.flatten
 
