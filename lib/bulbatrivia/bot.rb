@@ -67,7 +67,7 @@ module Bulbatrivia
     end
 
     def on_follow(user)
-      follow(user.screen_name)
+      follow(user.screen_name) if user.protected?
     end
 
     def on_mention(mention)
