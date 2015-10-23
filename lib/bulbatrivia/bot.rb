@@ -63,6 +63,7 @@ module Bulbatrivia
         trivium = @scheduled_trivia_manager.random_trivium
         tweet format_tweet(trivium)
         unfollow_unfollowers
+        unfollow_public
       end
     end
 
@@ -101,6 +102,10 @@ module Bulbatrivia
       unfollowers = twitter.following.map(&:id) - twitter.followers.map(&:id)
       puts "@#{username}: Unfollowing #{unfollowers.join(", ")}"
       twitter.unfollow(*unfollowers)
+    end
+
+    def unfollow_public
+      twitter.unfollow *twitter.following.reject(&:protected?)
     end
 
     protected
