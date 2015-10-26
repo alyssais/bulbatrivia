@@ -7,7 +7,6 @@ GEM
       redis
     buftok (0.2.0)
     coderay (1.1.0)
-    diff-lcs (1.2.5)
     domain_name (0.5.23)
       unf (>= 0.0.5, < 1.0.0)
     engtagger (0.2.0)
@@ -55,19 +54,6 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     redis (3.2.1)
-    rspec (3.2.0)
-      rspec-core (~> 3.2.0)
-      rspec-expectations (~> 3.2.0)
-      rspec-mocks (~> 3.2.0)
-    rspec-core (3.2.3)
-      rspec-support (~> 3.2.0)
-    rspec-expectations (3.2.1)
-      diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.2.0)
-    rspec-mocks (3.2.1)
-      diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.2.0)
-    rspec-support (3.2.2)
     rufus-scheduler (3.0.9)
       tzinfo
     simple_oauth (0.3.1)
@@ -107,5 +93,4 @@ PLATFORMS
 
 DEPENDENCIES
   mechanize
-  rspec
   twitter_ebooks
